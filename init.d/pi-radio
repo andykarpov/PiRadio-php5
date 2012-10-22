@@ -1,0 +1,57 @@
+#!/bin/bash
+# /etc/init.d/pi-radio
+#
+
+### BEGIN INIT INFO
+# Provides:          pi-radio
+# Required-Start:
+# Required-Stop:
+# Should-Start:      
+# Should-Stop:
+# Default-Start:     
+# Default-Stop:
+# Short-Description: 
+# Description:       
+### END INIT INFO
+
+PI_RADIO_DIR=/home/pi/PiRadio
+
+
+# Some things that run always
+touch /var/lock/pi-radio
+
+if [[ $(whoami) != "root" ]]; then
+  echo "run as root"
+  exit 1
+fi
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Starting script pi-radio "
+    if [[ -e /var/run/pi-radio.pid ]]; then
+      PID=$(cat /var/run/pi-radio.pid)
+      if (ps -p $PID); then
+        echo "already running"
+        exit
+      fi
+    fi
+    cd $PI_RADIO_DIR
+    php radio.php &
+    echo $! > /var/run/pi-radio.pid
+    ;;
+  stop)
+    if [[ -e /var/run/pi-radio.pid ]]; then
+      echo "Stopping script pi-radio"
+      PID=$(cat /var/run/pi-radio.pid)
+      kill $PID
+      rm /var/run/pi-radio.pid
+    fi
+    ;;
+  *)
+    echo "Usage: /etc/init.d/pi-radio {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0

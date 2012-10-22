@@ -32,19 +32,49 @@ class Application {
      */
     protected $reading;
     
+    /**
+     * Current encoder value
+     * 
+     * @var integer 
+     */
     public $encoder_value = 0;
     
+    /**
+     * Current button state
+     * 
+     * @var integer 
+     */
     protected $button_value = 0;
     
     const APP_STATE_PLAYING = 'playing';
     const APP_STATE_VOLUME = 'volume';
     
+    /**
+     * App state
+     * 
+     * @var string
+     */
     protected $state;
     
+    /**
+     * Array of ScreenAbstract instances
+     * 
+     * @var ScreenAbstract 
+     */
     protected $screens = array();
     
+    /**
+     * Last updated timestamp
+     * 
+     * @var type 
+     */
     public $last_updated = 0;
     
+    /**
+     * Timestamp of last pressed button
+     * 
+     * @var type 
+     */
     public $last_pressed = 0;
 
     public function __construct() {
@@ -68,7 +98,7 @@ class Application {
             $this->state = self::APP_STATE_PLAYING;
             $this->screens[$this->state]->init();
         } catch (Exception $e) {
-            exit("Init failed");
+            exit("Init failed: " . (string) $e);
         }
     }
 
