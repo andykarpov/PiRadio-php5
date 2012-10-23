@@ -97,23 +97,36 @@ class Application {
             $this->lcd->init();
             $this->state = self::APP_STATE_PLAYING;
             $this->screens[$this->state]->init();
+            return true;
         } catch (Exception $e) {
-            exit("Init failed: " . (string) $e);
+            
+            // something goes wrong - port not ready, mpd died, etc.
+            // trying to wait some time before next try
+            
+            //exit("Init failed: " . (string) $e);
+            
+            sleep(5);
+            return false;
         }
     }
 
     public function run() {
 
-        $this->init();
-
+        $init_ok = false;
+        while (!$init_ok) {
+            $init_ok = $this->init();
+        }
+        
         $this->running_ok = true;
 
-        while ($this->running_ok) {
+        while (true) {
 
             $this->running_ok = $this->main(); 
 
             if (!$this->running_ok) {
-                exit(1);
+                //exit(1);
+                // something goes wrong, trying to re-init
+                $this->init();
             }
         }
         exit(0);
