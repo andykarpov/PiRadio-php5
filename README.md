@@ -41,6 +41,21 @@ Raspberry pi based internet radio with Arduino (LCD + encoder) as USB serial fro
 17. `sudo reboot` - should start internet radio automatically on boot
 
 
+**Troubleshooting**
+
+In some cases RaspberryPi dies on high network load.
+The solution is to upgrade to the latest firmware and adjust some config variables:
+
+1. `sudo wget http://goo.gl/1BOfJ -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update`
+2. `sudo apt-get install ca-certificates`
+3. `sudo rpi-update`
+4. Then follow the instructions from the following page: http://elinux.org/Rpi_USB_check-list
+5. `sudo reboot`
+
+To avoid mpd start playing on startup: 
+`sudo nano /etc/mpd.conf` and add a directive `restore_paused "yes"`
+
+
 **BOM**
 
 1. Raspberry Pi + case (https://www.modmypi.com/shop/raspberry-pi/raspberry-pi-and-modmypi-case) $58
