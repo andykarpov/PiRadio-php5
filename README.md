@@ -41,16 +41,38 @@ Raspberry pi based internet radio with Arduino (LCD + encoder) as USB serial fro
 17. `sudo reboot` - should start internet radio automatically on boot
 
 
-**Troubleshooting**
+**Troubleshooting and more optimizations**
 
-In some cases RaspberryPi dies on high network load.
-The solution is to upgrade to the latest firmware and adjust some config variables:
+In some cases RaspberryPi dies on high network load and/or USB load.
+The solution is to upgrade to the latest firmware and adjust some config variables.
+Also below we'll try to perform some basic optimizations
 
 1. `sudo wget http://goo.gl/1BOfJ -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update`
 2. `sudo apt-get install ca-certificates`
 3. `sudo rpi-update`
 4. Then follow the instructions from the following page: http://elinux.org/Rpi_USB_check-list
-5. `sudo reboot`
+5. Follow the instructions from http://www.raspberrypi.org/phpBB3/viewtopic.php?p=164633#p164633
+6. /etc/inittab: change this line: `T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100` to `#T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100`. I.e. comment it out, and save these changes.
+7. /boot/cmdline.txt: remove the text `console=ttyAMA0,115200 kgdboc=ttyAMA0,115200` if present
+8. remove the extra tty / getty's: `sudo sed -i '/[2-6]:23:respawn:\/sbin\/getty 38400 tty[2-6]/s%^%#%g' /etc/inittab`
+9. optimize mount: `sudo sed -i 's/defaults,noatime/defaults,noatime,nodiratime/g' /etc/fstab`
+10. disable ipv6: 
+- sudo -s
+- `echo "net.ipv6.conf.all.disable_ipv6=1" > /etc/sysctl.d/disableipv6.conf` 
+- `echo 'blacklist ipv6' >> /etc/modprobe.d/blacklist`
+- `sed -i '/::/s%^%#%g' /etc/hosts`
+11. replace deadline scheduler with noop: `sed -i 's/deadline/noop/g' /boot/cmdline.txt`
+12. remove unused services to reduce boot time:
+- `sudo update-rc.d lightdm remove`
+- `sudo update-rc.d dbus remove`
+- `sudo update-rc.d rsync remove`
+- `sudo update-rc.d motd remove`
+- `sudo update-rc.d rpcbind remove`
+- `sudo update-rc.d nfs-common remove`
+- `sudo update-rc.d cron remove`
+- `sudo update-rc.d rsyslog remove`
+- `sudo update-rc.d bootlogs remove`
+13. `sudo reboot`
 
 To avoid mpd start playing on startup: 
 `sudo nano /etc/mpd.conf` and add a directive `restore_paused "yes"`
