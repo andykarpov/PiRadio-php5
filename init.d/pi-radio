@@ -4,14 +4,15 @@
 
 ### BEGIN INIT INFO
 # Provides:          pi-radio
-# Required-Start:
-# Required-Stop:
-# Should-Start:      
-# Should-Stop:
-# Default-Start:     
-# Default-Stop:
-# Short-Description: 
-# Description:       
+# Required-Start:    $local_fs networking mpd 
+# Required-Stop:     $local_fs
+# Should-Start:      $network mpd
+# Should-Stop:       $network mpd
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Raspberry Pi Internet Radio
+# Description:       Start the Raspberry Pi Internet Radio service 
+#                    to control local mpd via Arduino-based front-end
 ### END INIT INFO
 
 PI_RADIO_DIR=/home/pi/PiRadio
