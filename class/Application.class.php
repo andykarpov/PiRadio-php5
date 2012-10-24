@@ -183,6 +183,8 @@ class Application {
                 $this->screens[$this->state]->action($time);
             }
             
+            usleep(10000);
+            
             return true;
 
         } catch (Exception $e) {

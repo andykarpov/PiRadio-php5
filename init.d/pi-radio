@@ -32,7 +32,7 @@ case "$1" in
     echo "Starting script pi-radio "
     if [[ -e /var/run/pi-radio.pid ]]; then
       PID=$(cat /var/run/pi-radio.pid)
-      if (ps -p $PID); then
+      if (ps -p $PID | grep php); then
         echo "already running"
         exit
       fi
@@ -45,8 +45,10 @@ case "$1" in
     if [[ -e /var/run/pi-radio.pid ]]; then
       echo "Stopping script pi-radio"
       PID=$(cat /var/run/pi-radio.pid)
-      kill $PID
-      rm /var/run/pi-radio.pid
+      if (ps -p $PID | grep php); then
+        kill $PID
+      fi 
+     rm /var/run/pi-radio.pid
     fi
     ;;
   *)
