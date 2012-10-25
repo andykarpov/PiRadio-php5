@@ -183,7 +183,7 @@ class Application {
                 $this->screens[$this->state]->action($time);
             }
             
-            usleep(10000);
+            usleep(100000);
             
             return true;
 
