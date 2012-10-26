@@ -235,7 +235,7 @@ class MPD {
         } else {
             while(!feof($this->mpd_sock)) {
                 $response =  fgets($this->mpd_sock,1024);
-                if (strncmp(self::RESPONSE_OK, $response, strlen(self::RESPONSE_OK)) == 0) {
+                if ($response && strncmp(self::RESPONSE_OK, $response, strlen(self::RESPONSE_OK)) == 0) {
                     $this->connected = true;
                     return $response;
                     break;
@@ -895,7 +895,9 @@ class MPD {
      * @return int
      */
     protected function _computeVersionValue($verStr) {
-        list ($ver_maj, $ver_min, $ver_rel ) = explode(".", $verStr);
+        $ver = explode(".", $verStr);
+        if (!isset($ver[2])) return false;
+        list ($ver_maj, $ver_min, $ver_rel ) = $ver;
         return ( 100 * $ver_maj ) + ( 10 * $ver_min ) + ( $ver_rel );
     }
 

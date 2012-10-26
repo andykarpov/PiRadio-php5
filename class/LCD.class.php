@@ -14,15 +14,51 @@ class LCD {
     protected $mode = 'text';
     protected $modes = array('text', 'bar');    
     
+    protected $allowed_displays = array(
+        array(16,2), array(16,4), array(20,4)
+    );
+    
     public function __construct(Application &$app) {
         $this->app = $app;
     }
     
     public function init() {
         $this->setMode('text');
+        $this->fetchConfig();
         for ($i=0; $i<$this->rows_count; $i++) {
             $this->setLine($i, '');
         }
+    }
+    
+    protected function fetchConfig() {
+        $cfg = $this->app->serial->read('CFG:');
+        if (empty($cfg)) return false;
+        $values = explode(":", $cfg);
+        if (!isset($values[2]) or $values[0] != 'DISPLAY') return false;
+        
+        $cols = (int) $values[1];
+        $rows = (int) $values[2];
+        
+        $is_allowed = false;
+        foreach($this->allowed_displays as $allowed) {
+            if ($allowed[0] == $cols and $allowed[1] == $rows) {
+                $is_allowed = true;
+            }
+        }
+        
+        if (!$is_allowed) return false;
+        
+        $this->chars_count = $cols;
+        $this->rows_count = $rows;
+        return true;
+    }
+    
+    public function getRowsCount() {
+        return $this->rows_count;
+    }
+    
+    public function getColsCount() {
+        return $this->chars_count;
     }
     
     public function setMode($mode) {

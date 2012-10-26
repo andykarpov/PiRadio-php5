@@ -99,12 +99,8 @@ class Application {
             $this->screens[$this->state]->init();
             return true;
         } catch (Exception $e) {
-            
-            // something goes wrong - port not ready, mpd died, etc.
-            // trying to wait some time before next try
-            
-            //exit("Init failed: " . (string) $e);
-            
+
+            echo $e->getMessage() . "\n";
             sleep(5);
             return false;
         }
@@ -149,14 +145,17 @@ class Application {
                 $this->reading = $read;
                 $values = explode(":", $read);
 
-                // read encoder value
-                if (isset($values[1])) {
-                    $this->encoder_value = round($values[1] / 4);
-                }
-                
-                // read button state
-                if (isset($values[2])) {
-                    $this->button_state = (int) $values[2];
+                // if command response is VALUES
+                if (isset($values[0]) and $values[0] == 'VALUES') {
+                    // read encoder value
+                    if (isset($values[1])) {
+                        $this->encoder_value = round($values[1] / 4);
+                    }
+
+                    // read button state
+                    if (isset($values[2])) {
+                        $this->button_state = (int) $values[2];
+                    }
                 }
 
                 // change state
@@ -183,11 +182,13 @@ class Application {
                 $this->screens[$this->state]->action($time);
             }
             
-            usleep(100000);
+            usleep(50000);
             
             return true;
 
         } catch (Exception $e) {
+            
+            echo $e->getMessage() . "\n";
             return false;
         }
     }

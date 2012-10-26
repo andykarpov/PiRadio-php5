@@ -56,13 +56,14 @@ class Serial {
     }
     
     /**
-     * Send a command READ: to the serial port and
+     * Send a command to the serial port and
      * read response (a line of text) from the serial port
      * 
+     * @param string $cmd
      * @return string
      */
-    public function read() {
-        $this->sendLine("READ:");
+    public function read($cmd = 'READ:') {
+        $this->sendLine($cmd);
         return $this->php_serial->readPort();
     }
     

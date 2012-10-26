@@ -62,10 +62,28 @@ class Player {
         }
     }
     
+    protected function fadeIn() {
+        // fade from 0 to $this->current_volume
+        for ($i=0; $i<=$this->current_volume; $i=$i+5) {
+            $this->mpd->setVolume($i);
+            usleep(1000);
+        }
+    }
+    
+    protected function fadeOut() {
+        // fade from $this->current_volume to 0
+        for ($i=$this->current_volume; $i>=0; $i=$i-5) {
+            $this->mpd->setVolume($i);
+            usleep(1000);
+        }
+    }
+    
     public function play($index) {
         if ($this->stations->getStation($index) instanceof Station) {
+            $this->fadeOut();
             $this->mpd->skipTo($index);
             $this->mpd->play();
+            $this->fadeIn();
             $this->is_playing = true;
             $this->current_index = $index;
         } else {
@@ -75,6 +93,7 @@ class Player {
     }
     
     public function stop() {
+        $this->fadeOut();
         $this->mpd->stop();
         $this->is_playing = false;
     }

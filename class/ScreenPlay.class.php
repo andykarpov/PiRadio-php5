@@ -26,11 +26,31 @@ class ScreenPlay extends ScreenAbstract {
         $this->encoderConstraints();
 
         // set lcd to display the current station
-        $station = $this->app->player->getStation($this->app->encoder_value);            
-        $this->app->lcd->setLines(array(
-            $station->getName(), 
-            'Playing: ' . ($this->app->encoder_value+1) . ' / ' . $this->app->player->getStationsCount() )
-        );
+        $station = $this->app->player->getStation($this->app->encoder_value);
+        
+        // todo: get mpd title / etc
+        
+        switch ($this->app->lcd->getRowsCount()) {
+            case 2:
+                $this->app->lcd->setLines(
+                    array(
+                        $station->getName(), 
+                        'Playing: ' . ($this->app->encoder_value+1) . ' / ' . $this->app->player->getStationsCount() 
+                    )
+                );
+            break;
+            case 4:
+                $this->app->lcd->setLines(
+                    array(
+                        $station->getName(), 
+                        $this->app->player->getCurrentTitle(),
+                        $this->app->player->getCurrentSong(),
+                        'Playing: ' . ($this->app->encoder_value+1) . ' / ' . $this->app->player->getStationsCount() 
+                    )
+                );
+            break;
+        }
+
     }
     
     public function action($time) {

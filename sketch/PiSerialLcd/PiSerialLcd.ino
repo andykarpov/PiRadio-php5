@@ -11,12 +11,16 @@
  #include <Button.h>
  #include <Led.h>
  
- LiquidCrystal lcd(12,11,10,9,8,7); 
- Encoder enc(2,3);
- Button btn(4, PULLUP);
- Led led_red(5);
- Led led_green(6);
- Led backlight(13);
+// display configuration
+#define ROWS 2 // number of rows
+#define COLS 16 // number of columns
+
+ LiquidCrystal lcd(12, 11, 10, 9, 8, 7); // lcd connected to D12, D11, D10, D9, D8, D7 
+ Encoder enc(2, 3); // encoder pins A and B connected to D2 and D3 
+ Button btn(4, PULLUP); // encoder's button connected to GND and D4
+ Led led_red(5); // encoder's red led connected to GND and D5 via 470 Ohm resistor
+ Led led_green(6); // encoder's green led connected to GND and D6 via 470 Ohm resistor
+ Led backlight(13); // lcd backlight (lcd pins 15 and 16) connected to D13 and GND
  
  const int buf_len = 128; 
  char buf[buf_len];
@@ -80,6 +84,13 @@ byte p5[8] = {
   0b11111
 };
  
+ /**
+  * Setup routines
+  *
+  * Perform Serial init, LCD init, set the initial states of leds and backlight
+  *
+  * @return void
+  */
  void setup() {
    Serial.begin(9600);
    Serial.flush();
@@ -89,15 +100,20 @@ byte p5[8] = {
    lcd.createChar(3, p3);
    lcd.createChar(4, p4);
    lcd.createChar(5, p5);
-   lcd.begin(16,2);
+   lcd.begin(ROWS, COLS);
    lcd.clear();
    interrupts();
-//   lcd.print("RpiSerialLCD");
+   lcd.print("Loading...");
    led_green.off();
    led_red.off();
    backlight.on();
  }
  
+ /**
+  * Main loop
+  *
+  * @return void
+  */
  void loop() {
    readLine();
    if (!buffering) {
@@ -108,6 +124,11 @@ byte p5[8] = {
    }
  }
  
+ /**
+  * Fill internal buffer with a single line from the serial port 
+  *
+  * @return void
+  */
  void readLine() {
    if (Serial.available())  {
      while (Serial.available()) {
@@ -124,48 +145,93 @@ byte p5[8] = {
    }
  }
  
+ /**
+  * Routine to compare input line from the serial port and perform a response, if required
+  *
+  * @return void
+  */
  void processInput() {
      String content = String(buf);
   
-     //content.trim();
      int pos = content.indexOf(sep);
      if (content.length() == 0 || pos < 0) return;
   
      String cmd = content.substring(0, pos);
      String arg = content.substring(pos+1);
-  
+
+     // command CMD: will answer DISPLAY:X:Y, where X is number of columns and Y is number of rows  
+     if (cmd.compareTo("CFG") == 0) {
+         Serial.print("DISPLAY:");
+         Serial.print(COLS);
+         Serial.print(":");
+         Serial.println(ROWS);
+     }
+
+     // command TEXT1:<some text> will print text on the first line of the lcd
      if (cmd.compareTo("TEXT1") == 0) {
          lcd.setCursor(0,0);
          lcd.print(arg);
      } 
-     
-     if (cmd.compareTo("TEXT2") == 0) {
+
+     // command TEXT2:<some text> will print text on the second line of the lcd, if allowed    
+     if (cmd.compareTo("TEXT2") == 0 && COLS >=2) {
          lcd.setCursor(0,1);
          lcd.print(arg);
      }
+
+     // command TEXT3:<some text> will print text on the third line of the lcd, if allowed
+     if (cmd.compareTo("TEXT3") == 0 && COLS >=3) {
+         lcd.setCursor(0,2);
+         lcd.print(arg);
+     }
+
+     // command TEXT4:<some text> will print text on the fourth line of the lcd, if allowed
+     if (cmd.compareTo("TEXT4") == 0 && COLS >=4) {
+         lcd.setCursor(0,3);
+         lcd.print(arg);
+     }
      
+     // command BAR1:<integer between 0 and 100> will draw a progress bar on the first line of the lcd, if allowed
      if (cmd.compareTo("BAR1") == 0) {
          int bar_int = stringToInt(arg);
          lcd.setCursor(0,0);
          printBar(bar_int);
      }
 
-     if (cmd.compareTo("BAR2") == 0) {
+     // command BAR2:<integer between 0 and 100> will draw a progress bar on the second line of the lcd, if allowed
+     if (cmd.compareTo("BAR2") == 0  && COLS >=2) {
          int bar_int = stringToInt(arg);
          lcd.setCursor(0,1);
          printBar(bar_int);
      }
+
+     // command BAR3:<integer between 0 and 100> will draw a progress bar on the third line of the lcd, if allowed
+     if (cmd.compareTo("BAR3") == 0  && COLS >=3) {
+         int bar_int = stringToInt(arg);
+         lcd.setCursor(0,2);
+         printBar(bar_int);
+     }
+
+     // command BAR4:<integer between 0 and 100> will draw a progress bar on the fourth line of the lcd, if allowed
+     if (cmd.compareTo("BAR4") == 0  && COLS >=4) {
+         int bar_int = stringToInt(arg);
+         lcd.setCursor(0,3);
+         printBar(bar_int);
+     }
      
+     // command GET_ENC: will return ENCODER:X, where X is the actual value of the encoder
      if (cmd.compareTo("GET_ENC") == 0) {
          Serial.print("ENCODER:");
          Serial.println(enc.read());
      } 
-     
+
+     // command SET_ENC:<some integer> will set internal encoder value to the specified one     
      if (cmd.compareTo("SET_ENC") == 0) {
          int32_t enc_int = stringToInt(arg);
          enc.write(enc_int);
      } 
      
+     // command LED_RED:X will swith on a red led if X=1, otherwise switch off 
      if (cmd.compareTo("LED_RED") == 0) {
          if (arg == "1") {
            led_red.on();
@@ -173,7 +239,8 @@ byte p5[8] = {
            led_red.off();
          }
      } 
-     
+
+     // command LED_GREEN:X will swith on a green led if X=1, otherwise switch off      
      if (cmd.compareTo("LED_GREEN") == 0) {
          if (arg == "1") {
            led_green.on();
@@ -182,6 +249,7 @@ byte p5[8] = {
          }   
      }    
   
+     // command BACKLIGHT:X will swith on lcd backlight if X=1, otherwise switch off 
      if (cmd.compareTo("BACKLIGHT") == 0) {
          if (arg == "1") {
            backlight.on();
@@ -189,12 +257,14 @@ byte p5[8] = {
            backlight.off();
          }
      }
-     
+
+     // command BTN: will return a button state with response BUTTON:X, where X=1 if button is pressed, X=0 - otherwise     
      if (cmd.compareTo("BTN") == 0) {
        Serial.print("BUTTON:");
-       Serial.println(btn.isPressed());
+       Serial.println(btn.isPressed() ? "1" : "0");
      }
      
+     // command READ: will return a response VALUES:X:Y, where X is an encoder value, and Y is a button state
      if (cmd.compareTo("READ") == 0) {
         Serial.print("VALUES:");
         Serial.print(enc.read());
@@ -203,6 +273,12 @@ byte p5[8] = {
      }
  }
  
+ /**
+  * Conver string object into signed integer value
+  *
+  * @param String s
+  * @return int
+  */
  int stringToInt(String s) {
      char this_char[s.length() + 1];
      s.toCharArray(this_char, sizeof(this_char));
@@ -210,9 +286,14 @@ byte p5[8] = {
      return result;
  }
  
+ /** 
+  * Pring a progress bar on the current cursor position
+  *
+  * @param int percent
+  */
  void printBar(int percent) {
    
-   double lenght = 16.0;
+   double lenght = COLS + 0.0;
    double value = lenght/100*percent;
    unsigned int num_full;
    double value_half;
