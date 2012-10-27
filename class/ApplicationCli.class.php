@@ -86,12 +86,12 @@ class ApplicationCli extends ApplicationAbstract {
     /**
      * Delay in microseconds on init failure before next attempt
      */
-    const APP_DELAY_FAILURE = 5000000;
+    const APP_DELAY_FAILURE = 2000000;
 
     /**
      * Delay in microseconds for main loop
      */
-    const APP_DELAY_LOOP = 50000;
+    const APP_DELAY_LOOP = 10000;
 
     /**
      * Class constructor
