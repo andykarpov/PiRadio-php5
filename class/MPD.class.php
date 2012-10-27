@@ -63,7 +63,7 @@ class MPD {
      * @return boolean
      */
     public function playlistAdd($fileName) {
-        $this->execCommand('add', array('$filename'));
+        $this->execCommand('add', array($fileName));
         return true;
     }
 
