@@ -40,7 +40,9 @@ class Process {
                 $select_pipes_w = array();
                 if ($pipe_stdin) $select_pipes_w[] = $pipe_stdin;
 
-                stream_select($select_pipes_r, $select_pipes_w, $dummy = null, 1, 0);
+                $dummy = array();
+
+                stream_select($select_pipes_r, $select_pipes_w, $dummy, 1, 0);
 
                 // write?
                 if (in_array($pipe_stdin, $select_pipes_w)) {
