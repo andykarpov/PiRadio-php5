@@ -12,6 +12,7 @@ require_once 'class/ApplicationCli.class.php';
 require_once 'class/LCD.class.php';
 require_once 'class/M3U.class.php';
 require_once 'class/MPD.class.php';
+require_once 'class/Process.class.php';
 require_once 'class/Player.class.php';
 require_once 'class/Serial.class.php';
 require_once 'class/Stations.class.php';
