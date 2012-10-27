@@ -53,8 +53,8 @@ class M3U {
         return $this;
     }
     
-    public function save() {        
-        if (!is_writeable($this->filename)) return false;        
+    public function save() {
+        if (!is_writeable($this->filename)) return false;
         return file_put_contents(
             $this->filename, 
             implode('\r\n', $this->raw)

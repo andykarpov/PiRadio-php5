@@ -9,9 +9,10 @@ $cfg['environment']['test'] = array(
     'flow_control' => 'none',
 
     'mpd' => array(
-        'host' => '192.168.2.16',
+        'mpc_bin' => '/usr/local/bin/mpc',
+        'host' => '192.168.2.19',
         'port' => 6600,
-        'password' => 'admin'
+        'password' => 'admin',
     ),
     
     'playlist' => realpath(dirname(__FILE__) . '/../') . '/playlist/radio.m3u',

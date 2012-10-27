@@ -1,11 +1,10 @@
 <?php
 
-class Application {
-
-    /**
-     * @var array
-     */
-    public $cfg;
+/**
+ * Cli application
+ *
+ */
+class ApplicationCli extends ApplicationAbstract {
 
     /**
      * @var boolean
@@ -45,10 +44,7 @@ class Application {
      * @var integer 
      */
     protected $button_value = 0;
-    
-    const APP_STATE_PLAYING = 'playing';
-    const APP_STATE_VOLUME = 'volume';
-    
+
     /**
      * App state
      * 
@@ -59,38 +55,65 @@ class Application {
     /**
      * Array of ScreenAbstract instances
      * 
-     * @var ScreenAbstract 
+     * @var ScreenAbstract[]
      */
     protected $screens = array();
     
     /**
      * Last updated timestamp
      * 
-     * @var type 
+     * @var integer
      */
     public $last_updated = 0;
     
     /**
      * Timestamp of last pressed button
      * 
-     * @var type 
+     * @var integer
      */
     public $last_pressed = 0;
 
+    /**
+     * Playing state name
+     */
+    const APP_STATE_PLAYING = 'playing';
+
+    /**
+     * Volume change state name
+     */
+    const APP_STATE_VOLUME = 'volume';
+
+    /**
+     * Delay in microseconds on init failure before next attempt
+     */
+    const APP_DELAY_FAILURE = 5000000;
+
+    /**
+     * Delay in microseconds for main loop
+     */
+    const APP_DELAY_LOOP = 50000;
+
+    /**
+     * Class constructor
+     */
     public function __construct() {
 
-        global $cfg;
-        $this->cfg = $cfg;
+        parent::__construct();
         $this->serial = new Serial($this);
         $this->player = new Player($this);
         $this->lcd = new LCD($this);
         $this->screens[self::APP_STATE_PLAYING] = new ScreenPlay($this);
         $this->screens[self::APP_STATE_VOLUME] = new ScreenVolume($this);
-
     }
 
+    /**
+     * Init routine
+     *
+     * Trying to init all internal classes, recursively on exceptions
+     *
+     * @return bool
+     */
     protected function init() {
-
         try {
             $this->serial->init();
             $this->player->init();
@@ -99,13 +122,16 @@ class Application {
             $this->screens[$this->state]->init();
             return true;
         } catch (Exception $e) {
-
-            echo $e->getMessage() . "\n";
-            sleep(5);
+            usleep(self::APP_DELAY_FAILURE);
             return false;
         }
     }
 
+    /**
+     * Run the main loop
+     *
+     * If return value of the $this->main() is false - try to re-init the whole app by calling $this->init()
+     */
     public function run() {
 
         $init_ok = false;
@@ -128,6 +154,11 @@ class Application {
         exit(0);
     }
 
+    /**
+     * Main routine
+     *
+     * @return bool
+     */
     protected function main() {
 
         try {
@@ -154,12 +185,12 @@ class Application {
 
                     // read button state
                     if (isset($values[2])) {
-                        $this->button_state = (int) $values[2];
+                        $this->button_value = (int) $values[2];
                     }
                 }
 
                 // change state
-                if ($this->button_state && ($time - $this->last_pressed) > 1) {
+                if ($this->button_value && ($time - $this->last_pressed) > 1) {
                     $this->last_pressed = $time;
                     $this->state = ($this->state == self::APP_STATE_PLAYING) ? self::APP_STATE_VOLUME : self::APP_STATE_PLAYING;
                     $mode_changed = true;
@@ -182,7 +213,7 @@ class Application {
                 $this->screens[$this->state]->action($time);
             }
             
-            usleep(50000);
+            usleep(self::APP_DELAY_LOOP);
             
             return true;
 

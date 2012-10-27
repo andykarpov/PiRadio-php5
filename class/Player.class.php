@@ -1,45 +1,84 @@
 <?php
 
 class Player {
-    
+
+    /**
+     * @var ApplicationCli
+     */
     protected $app;
-    
+
+    /**
+     * @var MPD
+     */
     protected $mpd;
-    
+
+    /**
+     * @var Stations
+     */
     protected $stations;
-            
+
+    /**
+     * @var bool
+     */
     protected $is_playing = false;
-    
+
+    /**
+     * @var int
+     */
     public $current_index = 0;
-    
+
+    /**
+     * @var int
+     */
     public $current_volume = 100;
-    
+
+    protected $meta_information = array(
+        'title' => '',
+        'song' => ''
+    );
+
+    /**
+     * Class constructor
+     *
+     * @param ApplicationCli $app
+     */
     public function __construct(&$app) {
         $this->app = $app;
         $this->mpd = new MPD();
         $this->stations = new Stations($app);
     }
-    
+
+    /**
+     * Init
+     */
     public function init() {
         $env = $this->app->cfg['environment'][$this->app->cfg['env']];
         
         // init MPD
-        $this->mpd->setHost($env['mpd']['host']);
-        $this->mpd->setPort($env['mpd']['port']);
-        $this->mpd->setPassword($env['mpd']['password']);
+        $this->mpd->setMpcExecutable($env['mpd']['mpc_bin']);
 
         $this->mpd->init();
         $this->stations->init();
         $this->setPlaylist();
-        $this->loadState();        
+        $this->loadState();
     }
-    
+
+    /**
+     * Save the current playing station and volume into the filesystem state file
+     *
+     * @return bool
+     */
     public function saveState() {
-        $env = $this->app->cfg['environment'][$this->app->cfg['env']];        
+        $env = $this->app->cfg['environment'][$this->app->cfg['env']];
         file_put_contents($env['state'], (string) $this->current_index . ':' . (string) $this->current_volume);
         return true;
     }
-    
+
+    /**
+     * Load the current playing station and volume from the state file
+     *
+     * @return bool
+     */
     public function loadState() {
         $env = $this->app->cfg['environment'][$this->app->cfg['env']];
         $state = file_get_contents($env['state']);
@@ -52,16 +91,23 @@ class Player {
         }
         return false;
     }
-    
+
+    /**
+     * Clear and populate mpd playlist with stations from $this->stations
+     *
+     */
     public function setPlaylist() {
         $all = $this->stations->getAll();
         $this->mpd->stop();
         $this->mpd->playlistClear();
         foreach($all as $station) {
-            $this->mpd->playlistAdd($station->getUrl());            
+            $this->mpd->playlistAdd($station->getUrl());
         }
     }
-    
+
+    /**
+     * Make fadeIn volume effect
+     */
     protected function fadeIn() {
         // fade from 20 to $this->current_volume
         for ($i=20; $i<=$this->current_volume; $i=$i+1) {
@@ -69,7 +115,10 @@ class Player {
             usleep(5000);
         }
     }
-    
+
+    /**
+     * Make fadeOut volume effect
+     */
     protected function fadeOut() {
         // fade from $this->current_volume to 20
         for ($i=$this->current_volume; $i>=20; $i=$i-1) {
@@ -77,11 +126,15 @@ class Player {
             usleep(5000);
         }
     }
-    
+
+    /**
+     * Play station at $index
+     *
+     * @param $index
+     */
     public function play($index) {
         if ($this->stations->getStation($index) instanceof Station) {
-            $this->mpd->skipTo($index);
-            $this->mpd->play();
+            $this->mpd->play($index);
             $this->fadeIn();
             $this->is_playing = true;
             $this->current_index = $index;
@@ -90,29 +143,58 @@ class Player {
         }
         $this->saveState();
     }
-    
+
+    /**
+     * Stop current playing station
+     */
     public function stop() {
         $this->fadeOut();
         $this->mpd->stop();
         $this->is_playing = false;
     }
-    
+
+    /**
+     * Return true if current playing state is true
+     *
+     * @return bool
+     */
     public function getIsPlaying() {
         return $this->is_playing;
     }
-    
+
+    /**
+     * Return number of stations in the current playlist
+     *
+     * @return int
+     */
     public function getStationsCount() {
         return $this->stations->getCount();
     }
-    
+
+    /**
+     * Return current station index
+     *
+     * @return int
+     */
     public function getCurrentIndex() {
         return $this->current_index;
     }
 
+    /**
+     * Return current volume
+     *
+     * @return int
+     */
     public function getCurrentVolume() {
         return $this->current_volume;
     }
-    
+
+    /**
+     * Set current volume
+     *
+     * @param $volume
+     * @return bool
+     */
     public function setVolume($volume) {
         $this->current_volume = (int)$volume;
         
@@ -121,8 +203,28 @@ class Player {
         $this->saveState();
         return $this->mpd->setVolume($this->current_volume);
     }
-    
+
+    /**
+     * Get station at $index
+     *
+     * @param $index
+     * @return null|Station
+     */
     public function getStation($index) {
         return $this->stations->getStation($index);
+    }
+
+    protected function fetchMetaInformation() {
+        // todo
+    }
+
+    public function getCurrentTitle() {
+        $this->fetchMetaInformation();
+        return $this->meta_information['title'];
+    }
+
+    public function getCurrentSong() {
+        $this->fetchMetaInformation();
+        return $this->meta_information['song'];
     }
 }

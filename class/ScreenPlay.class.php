@@ -28,8 +28,6 @@ class ScreenPlay extends ScreenAbstract {
         // set lcd to display the current station
         $station = $this->app->player->getStation($this->app->encoder_value);
         
-        // todo: get mpd title / etc
-        
         switch ($this->app->lcd->getRowsCount()) {
             case 2:
                 $this->app->lcd->setLines(

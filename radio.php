@@ -4,6 +4,6 @@
 
 include 'config/bootstrap.php';
 
-$app = new Application();
+$app = new ApplicationCli();
 $app->run();
 

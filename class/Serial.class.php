@@ -4,7 +4,7 @@ class Serial {
 
     /**
      * Application instance
-     * @var Application
+     * @var ApplicationCli
      */
     protected $app;
     
@@ -17,9 +17,9 @@ class Serial {
     /**
      * Constructor
      * 
-     * @param Application $app
+     * @param ApplicationCli $app
      */
-    public function __construct(Application &$app) {
+    public function __construct(ApplicationCli &$app) {
         $this->app = $app;
         $this->php_serial = new PhpSerial();
     }

@@ -18,7 +18,7 @@ class LCD {
         array(16,2), array(16,4), array(20,4)
     );
     
-    public function __construct(Application &$app) {
+    public function __construct(ApplicationCli &$app) {
         $this->app = $app;
     }
     
