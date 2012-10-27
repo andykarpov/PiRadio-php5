@@ -134,7 +134,7 @@ class Player {
      */
     public function play($index) {
         if ($this->stations->getStation($index) instanceof Station) {
-            $this->mpd->play($index);
+            $this->mpd->play($index+1);
             $this->fadeIn();
             $this->is_playing = true;
             $this->current_index = $index;
