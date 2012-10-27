@@ -34,7 +34,7 @@ class Player {
 
     protected $meta_information = array(
         'title' => '',
-        'song' => ''
+        'name' => ''
     );
 
     /**
@@ -215,7 +215,14 @@ class Player {
     }
 
     protected function fetchMetaInformation() {
-        // todo
+
+        // todo: call only once per N seconds
+
+        /*$res = $this->mpd->getSongInfo();
+        $lines = explode("\n", $res);
+        if (!empty($lines)) {
+            //
+        }*/
     }
 
     public function getCurrentTitle() {
@@ -225,6 +232,6 @@ class Player {
 
     public function getCurrentSong() {
         $this->fetchMetaInformation();
-        return $this->meta_information['song'];
+        return $this->meta_information['name'];
     }
 }

@@ -51,7 +51,7 @@ class MPD {
         if ( $newVol < 0 )   $newVol = 0;
         if ( $newVol > 100 ) $newVol = 100;
 
-        // todo
+        $this->execCommand('volume', array($newVol));
 
         return true;
     }
@@ -131,5 +131,10 @@ class MPD {
     public function pause() {
         $this->execCommand('pause');
         return true;
+    }
+
+    public function getSongInfo() {
+        // todo
+        return $this->execCommand('echo "currentsong" | nc localhost 6600 | grep -e "^Title: " -e "^Name: "');
     }
 }
