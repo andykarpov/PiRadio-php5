@@ -56,7 +56,7 @@ class ScreenPlay extends ScreenAbstract {
         // (to avoid LCD freezes while changing multiple stations one-by-one using encoder)
         if (!$this->app->player->getIsPlaying() or $this->app->player->getCurrentIndex() != $this->app->encoder_value) {
                 if (($time - $this->app->last_updated) >= 0.5) {
-                    $this->app->player->stop();
+                    //$this->app->player->stop();
                     $this->app->player->play($this->app->encoder_value);
                 }
         }
