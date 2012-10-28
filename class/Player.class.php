@@ -218,6 +218,10 @@ class Player {
         return $this->stations->getStation($index);
     }
 
+    /**
+     * Fetch station title and name into the $this->meta_information array
+     *
+     */
     protected function fetchMetaInformation() {
 
         $time = time();
@@ -232,21 +236,31 @@ class Player {
 
             if (!empty($lines)) {
                 foreach($lines as $line) {
-                    $matches = explode(' [] ', $line, 2);
-                    if (isset($matches[2])) {
-                        $this->meta_information['title'] = trim($matches[1]);
-                        $this->meta_information['name'] = trim($matches[2]);
+                    $matches = explode(' >>> ', $line, 2);
+                    if (isset($matches[1])) {
+                        $this->meta_information['title'] = trim($matches[0]);
+                        $this->meta_information['name'] = trim($matches[1]);
                     }
                 }
             }
         }
     }
 
+    /**
+     * Fetch and return the current station title
+     *
+     * @return mixed
+     */
     public function getCurrentMetaTitle() {
         $this->fetchMetaInformation();
         return $this->meta_information['title'];
     }
 
+    /**
+     * Fetch and return the current station name
+     *
+     * @return mixed
+     */
     public function getCurrentMetaName() {
         $this->fetchMetaInformation();
         return $this->meta_information['name'];

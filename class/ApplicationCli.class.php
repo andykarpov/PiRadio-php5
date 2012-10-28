@@ -170,9 +170,12 @@ class ApplicationCli extends ApplicationAbstract {
             $mode_changed = false;
             
             // read encoder and update lcd
-            if ($read != $this->reading && !empty($read)) {
-                $this->last_updated = $time;
-                
+            if (!empty($read)) {
+
+                if ($read != $this->reading) {
+                    $this->last_updated = $time;
+                }
+
                 $this->reading = $read;
                 $values = explode(":", $read);
 

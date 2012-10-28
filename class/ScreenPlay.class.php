@@ -38,11 +38,19 @@ class ScreenPlay extends ScreenAbstract {
                 );
             break;
             case 4:
+                $title = $this->app->player->getCurrentMetaTitle();
+                if (strlen($title) > $this->app->lcd->getColsCount()) {
+                    $title1 = substr($title, 0, $this->app->lcd->getColsCount());
+                    $title2 = substr($title, $this->app->lcd->getColsCount());
+                } else {
+                    $title1 = $title;
+                    $title2 = '';
+                }
                 $this->app->lcd->setLines(
                     array(
                         $station->getName(), 
-                        $this->app->player->getCurrentMetaTitle(),
-                        $this->app->player->getCurrentMetaName(),
+                        $title1,
+                        $title2,
                         'Playing: ' . ($this->app->encoder_value+1) . ' / ' . $this->app->player->getStationsCount() 
                     )
                 );
@@ -52,7 +60,7 @@ class ScreenPlay extends ScreenAbstract {
     }
     
     public function action($time) {
-        // change current playing station with 1s delay 
+        // change current playing station with 0.5 delay
         // (to avoid LCD freezes while changing multiple stations one-by-one using encoder)
         if (!$this->app->player->getIsPlaying() or $this->app->player->getCurrentIndex() != $this->app->encoder_value) {
                 if (($time - $this->app->last_updated) >= 0.5) {

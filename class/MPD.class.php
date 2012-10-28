@@ -19,7 +19,7 @@ class MPD {
         $options = '';
 
         Process::forkProcess(
-            $this->mpc . ' ' . $options . ' ' . escapeshellarg($cmd) . ' ' . implode(' ', $args),
+            $this->mpc . ' ' . $options . ' ' . $cmd . ' ' . implode(' ', $args),
             $result
         );
 
@@ -139,6 +139,6 @@ class MPD {
      * @return string
      */
     public function getStatus() {
-        return $this->execCommand('status --format', array('%title% [] %name%'));
+        return $this->execCommand("status --format '%title% >>> %name%'");
     }
 }
