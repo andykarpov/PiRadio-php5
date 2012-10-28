@@ -65,6 +65,7 @@ class ScreenPlay extends ScreenAbstract {
         if (!$this->app->player->getIsPlaying() or $this->app->player->getCurrentIndex() != $this->app->encoder_value) {
                 if (($time - $this->app->last_updated) >= 0.5) {
                     //$this->app->player->stop();
+                    $this->app->player->resetMetaInformation();
                     $this->app->player->play($this->app->encoder_value);
                 }
         }

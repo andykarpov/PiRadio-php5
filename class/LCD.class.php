@@ -126,6 +126,17 @@ class LCD {
                 }
             break;
             case 'bar':
+
+                for ($i=0; $i<$this->rows_count-2; $i++) {
+                    $this->app->serial->sendLine(
+                        sprintf(
+                            'TEXT%d:%s',
+                            $i+1,
+                            $this->adjustText('')
+                        )
+                    );
+                }
+
                 $this->app->serial->sendLine(
                     sprintf(
                         'TEXT%d:%s',

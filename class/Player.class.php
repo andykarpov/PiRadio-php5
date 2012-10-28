@@ -246,6 +246,11 @@ class Player {
         }
     }
 
+    public function resetMetaInformation() {
+        $this->meta_information['title'] = '';
+        $this->meta_information['name'] = '';
+    }
+
     /**
      * Fetch and return the current station title
      *
