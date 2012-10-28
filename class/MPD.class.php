@@ -133,9 +133,12 @@ class MPD {
         return true;
     }
 
-    public function getSongInfo() {
-        // todo
-        //return $this->execCommand('echo "currentsong" | nc localhost 6600 | grep -e "^Title: " -e "^Name: "');
-        return '';
+    /**
+     * Return status response
+     *
+     * @return string
+     */
+    public function getStatus() {
+        return $this->execCommand('status --format', '{%title%}{%name%}');
     }
 }

@@ -37,6 +37,10 @@ class Player {
         'name' => ''
     );
 
+    protected $meta_last_fetched = 0;
+
+    const META_FETCH_INTERVAL = 2;
+
     /**
      * Class constructor
      *
@@ -216,21 +220,36 @@ class Player {
 
     protected function fetchMetaInformation() {
 
-        // todo: call only once per N seconds
+        $time = time();
 
-        /*$res = $this->mpd->getSongInfo();
-        $lines = explode("\n", $res);
-        if (!empty($lines)) {
-            //
-        }*/
+        if ($time - $this->meta_last_fetched > self::META_FETCH_INTERVAL) {
+
+            $this->meta_last_fetched = $time;
+
+            $res = $this->mpd->getStatus();
+
+            $lines = explode("\n", $res);
+
+            if (!empty($lines)) {
+                foreach($lines as $line) {
+                    $matches = array();
+                    if (preg_match('/{(.*)}{(.*)}/', $line, $matches)) {
+                        if (isset($matches[2])) {
+                            $this->meta_information['title'] = trim($matches[1]);
+                            $this->meta_information['name'] = trim($matches[2]);
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    public function getCurrentTitle() {
+    public function getCurrentMetaTitle() {
         $this->fetchMetaInformation();
         return $this->meta_information['title'];
     }
 
-    public function getCurrentSong() {
+    public function getCurrentMetaName() {
         $this->fetchMetaInformation();
         return $this->meta_information['name'];
     }

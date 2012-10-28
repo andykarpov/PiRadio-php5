@@ -41,8 +41,8 @@ class ScreenPlay extends ScreenAbstract {
                 $this->app->lcd->setLines(
                     array(
                         $station->getName(), 
-                        $this->app->player->getCurrentTitle(),
-                        $this->app->player->getCurrentSong(),
+                        $this->app->player->getCurrentMetaTitle(),
+                        $this->app->player->getCurrentMetaName(),
                         'Playing: ' . ($this->app->encoder_value+1) . ' / ' . $this->app->player->getStationsCount() 
                     )
                 );

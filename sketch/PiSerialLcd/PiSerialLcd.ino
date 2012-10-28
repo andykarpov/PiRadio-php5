@@ -12,8 +12,8 @@
  #include <Led.h>
  
 // display configuration
-#define ROWS 2 // number of rows
-#define COLS 16 // number of columns
+#define ROWS 4 // number of rows
+#define COLS 20 // number of columns
 
  LiquidCrystal lcd(12, 11, 10, 9, 8, 7); // lcd connected to D12, D11, D10, D9, D8, D7 
  Encoder enc(2, 3); // encoder pins A and B connected to D2 and D3 
