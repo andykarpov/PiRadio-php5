@@ -139,6 +139,6 @@ class MPD {
      * @return string
      */
     public function getStatus() {
-        return $this->execCommand('status --format', '{%title%}{%name%}');
+        return $this->execCommand('status --format', array('%title% [] %name%'));
     }
 }

@@ -232,12 +232,10 @@ class Player {
 
             if (!empty($lines)) {
                 foreach($lines as $line) {
-                    $matches = array();
-                    if (preg_match('/{(.*)}{(.*)}/', $line, $matches)) {
-                        if (isset($matches[2])) {
-                            $this->meta_information['title'] = trim($matches[1]);
-                            $this->meta_information['name'] = trim($matches[2]);
-                        }
+                    $matches = explode(' [] ', $line, 2);
+                    if (isset($matches[2])) {
+                        $this->meta_information['title'] = trim($matches[1]);
+                        $this->meta_information['name'] = trim($matches[2]);
                     }
                 }
             }
