@@ -1,13 +1,54 @@
 <?php
 
+/**
+ * Class to talk mpd via mpc binary calls
+ *
+ */
 class MPD {
 
+    /**
+     * mpc binary path
+     *
+     * @var mixed
+     */
     protected $mpc = null;
 
+    /**
+     * mpd hostname
+     *
+     * @var string
+     */
+    protected $host = 'localhost';
+
+    /**
+     * mpd port
+     *
+     * @var int
+     */
+    protected $port = 6600;
+
+    /**
+     * mpd password
+     *
+     * @var mixed
+     */
+    protected $password = null;
+
+    /**
+     * Class constructor
+     *
+     */
     public function __construct() {
 
     }
 
+    /**
+     * Executes a mpc command
+     *
+     * @param string $cmd command
+     * @param array $args array of arguments
+     * @return string
+     */
     protected function execCommand($cmd, $args = array()) {
         $result = '';
 
@@ -15,8 +56,9 @@ class MPD {
             $args[$i] = escapeshellarg($arg);
         }
 
-        // todo: allows to specify --h, --p, etc for remote mpd access
         $options = '';
+        $options .= ' --host ' . (($this->password) ? escapeshellarg($this->password . '@' . $this->host) : escapeshellarg($this->host));
+        $options .= ' --port ' . (int) $this->port;
 
         Process::forkProcess(
             $this->mpc . ' ' . $options . ' ' . $cmd . ' ' . implode(' ', $args),
@@ -26,12 +68,40 @@ class MPD {
         return $result;
     }
 
-    public function init() {
-
-    }
-
+    /**
+     * Set mpc executable path
+     *
+     * @param string $filename
+     */
     public function setMpcExecutable($filename) {
         $this->mpc = $filename;
+    }
+
+    /**
+     * Set mpd hostname
+     *
+     * @param string $host
+     */
+    public function setHost($host) {
+        $this->host = $host;
+    }
+
+    /**
+     * Set mpd port
+     *
+     * @param string $port
+     */
+    public function setPort($port) {
+        $this->port = $port;
+    }
+
+    /**
+     * Set mpd password
+     *
+     * @param string $password
+     */
+    public function setPassword($password) {
+        $this->password = $password;
     }
 
     /**
@@ -135,6 +205,8 @@ class MPD {
 
     /**
      * Return status response
+     *
+     * Response format: <song title> >>> <station name>
      *
      * @return string
      */

@@ -15,6 +15,9 @@ class Process {
      * @throws Exception
      */
     public static function forkProcess($cmd, &$process_stdout, $process_stdin = false, $env = null) {
+
+        Debug::log($cmd);
+
         $descriptorspec = array(
             0 => array("pipe", "r"), // stdin is a pipe that the child will read from
             1 => array("pipe", "w"), // stdout is a pipe that the child will write to
@@ -70,6 +73,8 @@ class Process {
                     }
                 }
             }
+
+            Debug::log($process_stdout);
 
             $status = proc_close($proc);
             self::$status = $status;

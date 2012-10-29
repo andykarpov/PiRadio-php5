@@ -6,6 +6,7 @@ date_default_timezone_set('Europe/Kiev');
 
 error_reporting(E_ALL);
 
+require_once 'class/Debug.class.php';
 require_once 'lib/PhpSerial/PhpSerial.class.php';
 require_once 'class/ApplicationAbstract.class.php';
 require_once 'class/ApplicationCli.class.php';

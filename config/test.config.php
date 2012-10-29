@@ -10,11 +10,13 @@ $cfg['environment']['test'] = array(
 
     'mpd' => array(
         'mpc_bin' => '/usr/local/bin/mpc',
-        'host' => '192.168.2.19',
+        'host' => 'localhost',
         'port' => 6600,
         'password' => 'admin',
     ),
     
     'playlist' => realpath(dirname(__FILE__) . '/../') . '/playlist/radio.m3u',
-    'state' => realpath(dirname(__FILE__) . '/../') . '/state/current_state.txt'
+    'state' => realpath(dirname(__FILE__) . '/../') . '/state/current_state.txt',
+
+    'debug' => true
 );

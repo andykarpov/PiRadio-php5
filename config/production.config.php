@@ -16,5 +16,7 @@ $cfg['environment']['production'] = array(
     ),
     
     'playlist' => realpath(dirname(__FILE__) . '/../') . '/playlist/radio.m3u',
-    'state' => realpath(dirname(__FILE__) . '/../') . '/state/current_state.txt'
+    'state' => realpath(dirname(__FILE__) . '/../') . '/state/current_state.txt',
+
+    'debug' => false,
 );

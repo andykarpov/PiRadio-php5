@@ -122,6 +122,7 @@ class ApplicationCli extends ApplicationAbstract {
             $this->screens[$this->state]->init();
             return true;
         } catch (Exception $e) {
+            Debug::log($e->getMessage());
             usleep(self::APP_DELAY_FAILURE);
             return false;
         }
@@ -221,8 +222,7 @@ class ApplicationCli extends ApplicationAbstract {
             return true;
 
         } catch (Exception $e) {
-            
-            echo $e->getMessage() . "\n";
+            Debug::log($e->getMessage());
             return false;
         }
     }

@@ -60,8 +60,10 @@ class Player {
         
         // init MPD
         $this->mpd->setMpcExecutable($env['mpd']['mpc_bin']);
+        $this->mpd->setHost($env['mpd']['host']);
+        $this->mpd->setPort($env['mpd']['port']);
+        $this->mpd->setPassword($env['mpd']['password']);
 
-        $this->mpd->init();
         $this->stations->init();
         $this->setPlaylist();
         $this->loadState();
@@ -238,6 +240,13 @@ class Player {
                 foreach($lines as $line) {
                     $matches = explode(' >>> ', $line, 2);
                     if (isset($matches[1])) {
+                        // try to repair incoming strings
+                        if (function_exists('mb_detect_encoding') and function_exists('iconv')) {
+                            foreach($matches as $i => $match) {
+                                $input_encoding = mb_detect_encoding($match);
+                                $matches[$i] = @iconv($input_encoding, 'ISO-8859-1//TRANSLIT', trim($match));
+                            }
+                        }
                         $this->meta_information['title'] = trim($matches[0]);
                         $this->meta_information['name'] = trim($matches[1]);
                     }
