@@ -6,10 +6,11 @@ Raspberry pi based internet radio with Arduino (LCD + encoder) as USB serial fro
 
 **Preparing SD card for raspbian (on OSX)**
 
+0. make sure you're using Raspbian soft ABI image (2012-08-08-wheeze-armel.img)
 1. `diskutil list`
 2. choose a right disk id, like /dev/disk1
 3. `diskutil unmountDisk /dev/disk1`
-4. `sudo dd if=2012-09-18-wheeze-raspbian.img of=/dev/rdisk1 bs=1m`
+4. `sudo dd if=2012-08-08-wheeze-armel.img of=/dev/rdisk1 bs=1m`
 5. `diskutil eject /dev/disk1`
 
 **Preparing Arduino (on OSX)**
@@ -22,61 +23,19 @@ Raspberry pi based internet radio with Arduino (LCD + encoder) as USB serial fro
 
 **Booting Raspberry Pi**
 
-1. configure by setup wizard - enable ssh, over clock, resize root partition, set locale, timezone, etc… then reboot
-2. `ssh pi@<your-pi-ip-address>`
-3. `sudo apt-get update`
-4. `sudo apt-get dist-upgrade`
-5. `sudo apt-get install php5-cli git mpd mpc`
-6. `sudo reboot`
-7. `ssh pi@<your-pi-ip-address>`
-8. `cd`
-9. `git clone git://github.com/andykarpov/PiRadio.git`
-10. `sudo ln -s /home/pi/PiRadio/init.d/pi-radio /etc/init.d/pi-radio`
-11. `cd /home/pi/PiRadio/`
-12. `sudo chmod -R a+rwx state/ playlist/`
-13. `cd /home/pi/PiRadio/init.d/`
-14. `sudo chmod a+x pi-radio`
-15. `sudo /etc/init.d/pi-radio start`
-16. `sudo update-rc.d pi-radio defaults`
-17. `sudo reboot` - should start internet radio automatically on boot
-
-
-**Troubleshooting and more optimizations**
-
-In some cases RaspberryPi dies on high network load and/or USB load.
-The solution is to upgrade to the latest firmware and adjust some config variables.
-Also below we'll try to perform some basic optimizations
-
-1. `sudo wget http://goo.gl/1BOfJ -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update`
-2. `sudo apt-get install ca-certificates`
-3. `sudo rpi-update`
-4. Then follow the instructions from the following page: http://elinux.org/Rpi_USB_check-list
-5. Follow the instructions from http://www.raspberrypi.org/phpBB3/viewtopic.php?p=164633#p164633
-6. /etc/inittab: change this line: `T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100` to `#T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100`. I.e. comment it out, and save these changes.
-7. /boot/cmdline.txt: remove the text `console=ttyAMA0,115200 kgdboc=ttyAMA0,115200` if present
-8. remove the extra tty / getty's: `sudo sed -i '/[2-6]:23:respawn:\/sbin\/getty 38400 tty[2-6]/s%^%#%g' /etc/inittab`
-9. optimize mount: `sudo sed -i 's/defaults,noatime/defaults,noatime,nodiratime/g' /etc/fstab`
-10. disable ipv6: 
-- sudo -s
-- `echo "net.ipv6.conf.all.disable_ipv6=1" > /etc/sysctl.d/disableipv6.conf` 
-- `echo 'blacklist ipv6' >> /etc/modprobe.d/blacklist`
-- `sed -i '/::/s%^%#%g' /etc/hosts`
-11. replace deadline scheduler with noop: `sed -i 's/deadline/noop/g' /boot/cmdline.txt`
-12. remove unused services to reduce boot time:
-- `sudo update-rc.d lightdm remove`
-- `sudo update-rc.d dbus remove`
-- `sudo update-rc.d rsync remove`
-- `sudo update-rc.d motd remove`
-- `sudo update-rc.d rpcbind remove`
-- `sudo update-rc.d nfs-common remove`
-- `sudo update-rc.d cron remove`
-- `sudo update-rc.d rsyslog remove`
-- `sudo update-rc.d bootlogs remove`
-13. `sudo reboot`
-
-To avoid mpd start playing on startup: 
-`sudo nano /etc/mpd.conf` and add a directive `restore_paused "yes"`
-
+1. plug a keyboard to initial config
+2. configure by setup wizard - enable ssh, over clock, resize root partition, set locale, timezone, etc… then reboot
+3. unplug your keyboard. it is not neccessary since now
+4. `ssh pi@<your-pi-ip-address>`
+5. `sudo apt-get update`
+6. `sudo apt-get install php5-cli git mpd mpc`
+7. `cd /home/pi`
+8. `git clone git://github.com/andykarpov/PiRadio.git`
+9. `sudo ln -s /home/pi/PiRadio/init.d/pi-radio /etc/init.d/pi-radio`
+10. `sudo chmod -R a+rwx /home/pi/PiRadio/state/ /home/pi/PiRadio/playlist/`
+11. `sudo chmod a+x /home/pi/PiRadio/init.d/pi-radio`
+12. `sudo update-rc.d pi-radio defaults`
+13. `sudo reboot` - should start internet radio automatically on boot
 
 **BOM**
 
