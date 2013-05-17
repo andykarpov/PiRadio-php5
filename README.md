@@ -15,7 +15,7 @@ Raspberry pi based internet radio with Arduino (LCD + encoder) as USB serial fro
 **Preparing Arduino (on OSX)**
 
 1. connect LCD, encoder regarding schematic or fritzing diagram
-2. `git clone git://github.com/andykarpov/PiRadio.git`
+2. `git clone git://github.com/andykarpov/PiRadio-php5.git PiRadio`
 3. copy sketch/libraries to your arduino libraries folder (like /Users/<user>/Documents/Arduino/libraries)
 4. upload sketch/PiSerialLcd/PiSerialLcd.ino
 5. connect arduino via USB to the raspberry pi
@@ -30,7 +30,7 @@ Raspberry pi based internet radio with Arduino (LCD + encoder) as USB serial fro
 6. `sudo reboot`
 7. `ssh pi@<your-pi-ip-address>`
 8. `cd`
-9. `git clone git://github.com/andykarpov/PiRadio.git`
+9. `git clone git://github.com/andykarpov/PiRadio-php5.git PiRadio`
 10. `sudo ln -s /home/pi/PiRadio/init.d/pi-radio /etc/init.d/pi-radio`
 11. `cd /home/pi/PiRadio/`
 12. `sudo chmod -R a+rwx state/ playlist/`
